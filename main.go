@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
@@ -21,7 +23,18 @@ func main() {
 
 	server := negroni.Classic().With(negroni.HandlerFunc(CORSMiddleware))
 	server.UseHandler(router)
-	server.Run(":8080")
+
+	// Use PORT from environment variables if it's set. Needed for Heroku.
+	if portEnv := os.Getenv("PORT"); portEnv != "" {
+		port, err := strconv.Atoi(portEnv)
+		if err != nil {
+			fmt.Printf("can't convert PORT environment to integer: %v\n", err)
+			return
+		}
+		server.Run(fmt.Sprintf(":%d", port))
+	} else {
+		server.Run(":8080")
+	}
 }
 
 func CORSMiddleware(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
