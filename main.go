@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/negroni"
 )
 
-var store = NewFirebaseStore()
+var store = NewMemoryStore()
 
 func main() {
 	router := mux.NewRouter()
