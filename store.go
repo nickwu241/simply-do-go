@@ -22,20 +22,24 @@ type FirebaseStore struct {
 	db       *db.Client
 }
 
-func NewFirebaseStore() *FirebaseStore {
+func NewFirebaseStore() (*FirebaseStore, error) {
 	db, err := getDB()
 	if err != nil {
-		return nil
+		return nil, err
+	}
+	var globalID int
+	if err := db.NewRef("/global_id").Get(context.Background(), &globalID); err != nil {
+		return nil, err
 	}
 	return &FirebaseStore{
-		globalID: 0,
+		globalID: globalID,
 		db:       db,
-	}
+	}, nil
 }
 
 func (f *FirebaseStore) GetAll() []Item {
 	var data map[string]Item
-	if err := f.db.NewRef("/").Get(context.Background(), &data); err != nil {
+	if err := f.db.NewRef("/items").Get(context.Background(), &data); err != nil {
 		fmt.Printf("error fetching items: %v\n", err)
 	}
 	items := []Item{}
@@ -51,7 +55,7 @@ func (f *FirebaseStore) Get(id string) Item {
 
 func (f *FirebaseStore) Create(item Item) Item {
 	item.ID = f.nextID()
-	if err := f.db.NewRef("/"+item.ID).Set(context.Background(), item); err != nil {
+	if err := f.db.NewRef("/items/"+item.ID).Set(context.Background(), item); err != nil {
 		fmt.Printf("error creating item: %v\n", err)
 		return Item{}
 	}
@@ -60,7 +64,7 @@ func (f *FirebaseStore) Create(item Item) Item {
 
 func (f *FirebaseStore) Update(id string, item Item) Item {
 	item.ID = id
-	if err := f.db.NewRef("/"+id).Set(context.Background(), item); err != nil {
+	if err := f.db.NewRef("/items/"+id).Set(context.Background(), item); err != nil {
 		fmt.Printf("error updating item: %v\n", err)
 		return Item{}
 	}
@@ -68,7 +72,7 @@ func (f *FirebaseStore) Update(id string, item Item) Item {
 }
 
 func (f *FirebaseStore) Delete(id string) []Item {
-	if err := f.db.NewRef("/" + id).Delete(context.Background()); err != nil {
+	if err := f.db.NewRef("/items/" + id).Delete(context.Background()); err != nil {
 		fmt.Printf("error deleting item: %v\n", err)
 	}
 	return f.GetAll()
@@ -77,6 +81,9 @@ func (f *FirebaseStore) Delete(id string) []Item {
 func (f *FirebaseStore) nextID() string {
 	id := fmt.Sprintf("id_%d", f.globalID)
 	f.globalID++
+	if err := f.db.NewRef("/global_id").Set(context.Background(), f.globalID); err != nil {
+		fmt.Printf("error setting global_id: %v\n", err)
+	}
 	return id
 }
 

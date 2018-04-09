@@ -16,8 +16,13 @@ type API struct {
 }
 
 func main() {
+	store, err := NewFirebaseStore()
+	if err != nil {
+		fmt.Printf("error initializing firebase database: %v\n", err)
+		os.Exit(2)
+	}
 	api := API{
-		store: NewFirebaseStore(),
+		store: store,
 	}
 	router := mux.NewRouter()
 	router.HandleFunc("/api/items", api.getItems).Methods("GET")
@@ -33,8 +38,8 @@ func main() {
 	if portEnv := os.Getenv("PORT"); portEnv != "" {
 		port, err := strconv.Atoi(portEnv)
 		if err != nil {
-			fmt.Printf("can't convert PORT environment to integer: %v\n", err)
-			return
+			fmt.Printf("error converting PORT environment to integer: %v\n", err)
+			os.Exit(2)
 		}
 		server.Run(fmt.Sprintf(":%d", port))
 	} else {
