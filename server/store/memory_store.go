@@ -1,39 +1,43 @@
-package main
+package store
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/nickwu241/simply-do/server/models"
+)
 
 type MemoryStore struct {
 	globalID int
-	items    []Item
+	items    []models.Item
 }
 
 func NewMemoryStore() *MemoryStore {
 	return &MemoryStore{
 		globalID: 0,
-		items:    []Item{},
+		items:    []models.Item{},
 	}
 }
 
-func (m *MemoryStore) GetAll() []Item {
+func (m *MemoryStore) GetAll() []models.Item {
 	return m.items
 }
 
-func (m *MemoryStore) Get(id string) Item {
+func (m *MemoryStore) Get(id string) models.Item {
 	for _, item := range m.items {
 		if item.ID == id {
 			return item
 		}
 	}
-	return Item{}
+	return models.Item{}
 }
 
-func (m *MemoryStore) Create(item Item) Item {
+func (m *MemoryStore) Create(item models.Item) models.Item {
 	item.ID = m.nextID()
 	m.items = append(m.items, item)
 	return item
 }
 
-func (m *MemoryStore) Update(id string, item Item) Item {
+func (m *MemoryStore) Update(id string, item models.Item) models.Item {
 	for i := range m.items {
 		if m.items[i].ID == id {
 			m.items[i].Text = item.Text
@@ -41,10 +45,10 @@ func (m *MemoryStore) Update(id string, item Item) Item {
 			return m.items[i]
 		}
 	}
-	return Item{}
+	return models.Item{}
 }
 
-func (m *MemoryStore) Delete(id string) []Item {
+func (m *MemoryStore) Delete(id string) []models.Item {
 	for i, item := range m.items {
 		if item.ID == id {
 			m.items = append(m.items[:i], m.items[i+1:]...)

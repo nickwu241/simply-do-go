@@ -1,4 +1,4 @@
-package main
+package store
 
 import (
 	"context"
@@ -6,16 +6,9 @@ import (
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/db"
+	"github.com/nickwu241/simply-do/server/models"
 	"google.golang.org/api/option"
 )
-
-type Store interface {
-	GetAll() []Item
-	Get(id string) Item
-	Create(item Item) Item
-	Update(id string, item Item) Item
-	Delete(id string) []Item
-}
 
 type FirebaseStore struct {
 	globalID int
@@ -37,41 +30,41 @@ func NewFirebaseStore() (*FirebaseStore, error) {
 	}, nil
 }
 
-func (f *FirebaseStore) GetAll() []Item {
-	var data map[string]Item
+func (f *FirebaseStore) GetAll() []models.Item {
+	var data map[string]models.Item
 	if err := f.db.NewRef("/items").Get(context.Background(), &data); err != nil {
 		fmt.Printf("error fetching items: %v\n", err)
 	}
-	items := []Item{}
+	items := []models.Item{}
 	for _, item := range data {
 		items = append(items, item)
 	}
 	return items
 }
 
-func (f *FirebaseStore) Get(id string) Item {
-	return Item{}
+func (f *FirebaseStore) Get(id string) models.Item {
+	return models.Item{}
 }
 
-func (f *FirebaseStore) Create(item Item) Item {
+func (f *FirebaseStore) Create(item models.Item) models.Item {
 	item.ID = f.nextID()
 	if err := f.db.NewRef("/items/"+item.ID).Set(context.Background(), item); err != nil {
 		fmt.Printf("error creating item: %v\n", err)
-		return Item{}
+		return models.Item{}
 	}
 	return item
 }
 
-func (f *FirebaseStore) Update(id string, item Item) Item {
+func (f *FirebaseStore) Update(id string, item models.Item) models.Item {
 	item.ID = id
 	if err := f.db.NewRef("/items/"+id).Set(context.Background(), item); err != nil {
 		fmt.Printf("error updating item: %v\n", err)
-		return Item{}
+		return models.Item{}
 	}
 	return item
 }
 
-func (f *FirebaseStore) Delete(id string) []Item {
+func (f *FirebaseStore) Delete(id string) []models.Item {
 	if err := f.db.NewRef("/items/" + id).Delete(context.Background()); err != nil {
 		fmt.Printf("error deleting item: %v\n", err)
 	}
