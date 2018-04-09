@@ -10,6 +10,7 @@ import (
 	"github.com/nickwu241/simply-do/server/store"
 )
 
+// API contains the handlers for the server.
 type API struct {
 	store store.Store
 }
