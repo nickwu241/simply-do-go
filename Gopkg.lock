@@ -68,6 +68,12 @@
   version = "v1.6.1"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   name = "github.com/urfave/negroni"
   packages = ["."]
   revision = "5dbbc83f748fc3ad38585842b0aedab546d0ea1e"
@@ -226,6 +232,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "eb39f470811907dd1bd5cd8a9dfef3b882c08b7bebf1d260a3ed149093e898db"
+  inputs-digest = "91fd9a3a74b4c67a25edc9beb7f9817e91aacb5d70b42ede9f4df691518edb43"
   solver-name = "gps-cdcl"
   solver-version = 1
