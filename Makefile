@@ -1,7 +1,7 @@
 HEROKU_APP_NAME="simply-do"
 
 build-linux-binary:
-	GO_ENABLED=0 GOOS=linux go build -o server
+	GO_ENABLED=0 GOOS=linux go build
 
 build-docker: build-linux-binary
 	docker build --rm -t simply-do:latest .

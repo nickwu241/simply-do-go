@@ -4,9 +4,9 @@ WORKDIR /app
 RUN apk update && apk add ca-certificates
 
 COPY public public
-COPY server .
+COPY simply-do .
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
-CMD ["/app/server"]
+CMD ["/app/simply-do"]
 
 EXPOSE 8080
