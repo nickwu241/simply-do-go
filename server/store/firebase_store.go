@@ -10,11 +10,18 @@ import (
 	"google.golang.org/api/option"
 )
 
+const (
+	firebaseURL     = "https://simply-do.firebaseio.com"
+	credentialsFile = "simply-do-firebase-adminsdk.json"
+)
+
+// FirebaseStore implements Store using Firebase as persistent storage.
 type FirebaseStore struct {
 	globalID int
 	db       *db.Client
 }
 
+// NewFirebaseStore returns an instance of FirebaseStore.
 func NewFirebaseStore() (*FirebaseStore, error) {
 	db, err := getDB()
 	if err != nil {
@@ -30,6 +37,7 @@ func NewFirebaseStore() (*FirebaseStore, error) {
 	}, nil
 }
 
+// GetAll returns all the items or an empty slice of items if it fails.
 func (f *FirebaseStore) GetAll() []models.Item {
 	var data map[string]models.Item
 	if err := f.db.NewRef("/items").Get(context.Background(), &data); err != nil {
@@ -42,10 +50,16 @@ func (f *FirebaseStore) GetAll() []models.Item {
 	return items
 }
 
+// Get returns an item by id.
 func (f *FirebaseStore) Get(id string) models.Item {
+	var item models.Item
+	if err := f.db.NewRef("/items/"+id).Get(context.Background(), item); err != nil {
+		fmt.Printf("error fetching item with id %q: %v\n", id, err)
+	}
 	return models.Item{}
 }
 
+// Create returns the created item or an empty item if it failed.
 func (f *FirebaseStore) Create(item models.Item) models.Item {
 	item.ID = f.nextID()
 	if err := f.db.NewRef("/items/"+item.ID).Set(context.Background(), item); err != nil {
@@ -55,6 +69,7 @@ func (f *FirebaseStore) Create(item models.Item) models.Item {
 	return item
 }
 
+// Update returns the updated item if the id exists, otherwise an an empty item.
 func (f *FirebaseStore) Update(id string, item models.Item) models.Item {
 	item.ID = id
 	if err := f.db.NewRef("/items/"+id).Set(context.Background(), item); err != nil {
@@ -64,6 +79,7 @@ func (f *FirebaseStore) Update(id string, item models.Item) models.Item {
 	return item
 }
 
+// Delete returns the list after the operation.
 func (f *FirebaseStore) Delete(id string) []models.Item {
 	if err := f.db.NewRef("/items/" + id).Delete(context.Background()); err != nil {
 		fmt.Printf("error deleting item: %v\n", err)
@@ -82,9 +98,9 @@ func (f *FirebaseStore) nextID() string {
 
 func getDB() (*db.Client, error) {
 	conf := &firebase.Config{
-		DatabaseURL: "https://simply-do.firebaseio.com",
+		DatabaseURL: firebaseURL,
 	}
-	opt := option.WithCredentialsFile("simply-do-firebase-adminsdk.json")
+	opt := option.WithCredentialsFile(credentialsFile)
 	ctx := context.Background()
 	app, err := firebase.NewApp(ctx, conf, opt)
 	if err != nil {

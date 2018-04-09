@@ -9,10 +9,12 @@ import (
 	"github.com/urfave/negroni"
 )
 
+// Server runs the server with the given addr or uses :8080 by default.
 type Server interface {
 	Run(addr ...string)
 }
 
+// NewServer returns an instance of Server.
 func NewServer() (Server, error) {
 	store, err := store.NewFirebaseStore()
 	if err != nil {
