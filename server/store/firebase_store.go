@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/db"
@@ -47,6 +48,9 @@ func (f *FirebaseStore) GetAll() []models.Item {
 	for _, item := range data {
 		items = append(items, item)
 	}
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].ID < items[j].ID
+	})
 	return items
 }
 
