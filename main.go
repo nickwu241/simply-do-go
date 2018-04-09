@@ -11,15 +11,20 @@ import (
 	"github.com/urfave/negroni"
 )
 
-var store = NewMemoryStore()
+type API struct {
+	store Store
+}
 
 func main() {
+	api := API{
+		store: NewFirebaseStore(),
+	}
 	router := mux.NewRouter()
-	router.HandleFunc("/api/items", getItems).Methods("GET")
-	router.HandleFunc("/api/items/{id}", getItem).Methods("GET")
-	router.HandleFunc("/api/items", createItem).Methods("POST")
-	router.HandleFunc("/api/items/{id}", updateItem).Methods("PUT")
-	router.HandleFunc("/api/items/{id}", deleteItem).Methods("DELETE")
+	router.HandleFunc("/api/items", api.getItems).Methods("GET")
+	router.HandleFunc("/api/items/{id}", api.getItem).Methods("GET")
+	router.HandleFunc("/api/items", api.createItem).Methods("POST")
+	router.HandleFunc("/api/items/{id}", api.updateItem).Methods("PUT")
+	router.HandleFunc("/api/items/{id}", api.deleteItem).Methods("DELETE")
 
 	server := negroni.Classic().With(negroni.HandlerFunc(CORSMiddleware))
 	server.UseHandler(router)
@@ -42,45 +47,45 @@ func CORSMiddleware(w http.ResponseWriter, r *http.Request, next http.HandlerFun
 	next(w, r)
 }
 
-func getItems(w http.ResponseWriter, r *http.Request) {
-	items := store.GetAll()
+func (api *API) getItems(w http.ResponseWriter, r *http.Request) {
+	items := api.store.GetAll()
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(items)
 }
 
-func getItem(w http.ResponseWriter, r *http.Request) {
+func (api *API) getItem(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	item := store.Get(params["id"])
+	item := api.store.Get(params["id"])
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(item)
 }
 
-func createItem(w http.ResponseWriter, r *http.Request) {
+func (api *API) createItem(w http.ResponseWriter, r *http.Request) {
 	var newItem Item
 	if err := json.NewDecoder(r.Body).Decode(&newItem); err != nil {
 		fmt.Printf("invalid request body: %v\n", err)
 		return
 	}
-	item := store.Create(newItem)
+	item := api.store.Create(newItem)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(item)
 }
 
-func updateItem(w http.ResponseWriter, r *http.Request) {
+func (api *API) updateItem(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var updateItem Item
 	if err := json.NewDecoder(r.Body).Decode(&updateItem); err != nil {
 		fmt.Printf("invalid request body: %v\n", err)
 		return
 	}
-	item := store.Update(params["id"], updateItem)
+	item := api.store.Update(params["id"], updateItem)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(item)
 }
 
-func deleteItem(w http.ResponseWriter, r *http.Request) {
+func (api *API) deleteItem(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	items := store.Delete(params["id"])
+	items := api.store.Delete(params["id"])
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(items)
 }
