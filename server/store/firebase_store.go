@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"time"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/db"
@@ -49,7 +50,7 @@ func (f *FirebaseStore) GetAll() []models.Item {
 		items = append(items, item)
 	}
 	sort.Slice(items, func(i, j int) bool {
-		return items[i].ID < items[j].ID
+		return items[i].TimeCreated.Before(items[j].TimeCreated)
 	})
 	return items
 }
@@ -66,6 +67,7 @@ func (f *FirebaseStore) Get(id string) models.Item {
 // Create returns the created item or an empty item if it failed.
 func (f *FirebaseStore) Create(item models.Item) models.Item {
 	item.ID = f.nextID()
+	item.TimeCreated = time.Now()
 	if err := f.db.NewRef("/items/"+item.ID).Set(context.Background(), item); err != nil {
 		fmt.Printf("error creating item: %v\n", err)
 		return models.Item{}
