@@ -20,9 +20,7 @@ func NewServer() (Server, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "initializing firebase database")
 	}
-	api := API{
-		store: store,
-	}
+	api := API{store: store}
 	router := mux.NewRouter()
 	router.HandleFunc("/api/items", api.getItems).Methods("GET")
 	router.HandleFunc("/api/items/{id}", api.getItem).Methods("GET")
