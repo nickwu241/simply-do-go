@@ -5,26 +5,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="shortcut icon" href="/favicon.ico" />
 
 <title>Simply Do</title>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
 <link rel="stylesheet" type="text/css" href="main.css"></link>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
 
 <body>
   <div id="app">
-    <h2>Reminders
-      <button @click="createItem">+</button>
-    </h2>
-    <div v-for="item in items">
-      <input type="checkbox" v-model="item.checked" @change="updateItem(item)">
-      <input v-model="item.text" @input="updateItem(item)" @blur="deleteItemIfEmpty(item)" :ref="item.id">
-      <button @click="deleteItem(item)">X</button>
+    <h3>Reminders</h3>
+    <div>
+      <div v-for="item in items">
+        <div class="pretty p-default p-round">
+          <input type="checkbox" v-model="item.checked" @change="updateItem(item)">
+          <div class="state p-success">
+            <label></label>
+          </div>
+        </div>
+        <input v-model="item.text" :class="{strike: item.checked}" @input="updateItem(item)" @blur="deleteItemIfEmpty(item)" :ref="item.id">
+        <button class="round-btn" :class="{green: item.checked}" @click="deleteItem(item)">X</button>
+      </div>
+      <input v-if="!lastItem || lastItem.text !== ''" @focus="createItem">
     </div>
-    <input v-if="!lastItem || lastItem.text !== ''" @focus="createItem">
   </div>
   <script src="main.js"></script>
 </body>
