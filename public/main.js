@@ -1,16 +1,26 @@
 var app = new Vue({
     el: '#app',
     data: {
-        items: []
+        items: [],
+        uid: 'default'
     },
     computed: {
         lastItem: function () {
             return this.items ? this.items[this.items.length - 1] : null
         }
     },
+    watch: {
+        uid: function (newValue) {
+            this.getItems()
+        }
+    },
     methods: {
         getItems: function () {
-            return fetch('/api/items').then(function (response) {
+            return fetch('/api/items', {
+                headers: {
+                    'x-simply-do-uid': this.uid
+                }
+            }).then(function (response) {
                 return response.json()
             }).then(function (body) {
                 console.log(body)
@@ -25,6 +35,9 @@ var app = new Vue({
             }
             return fetch('/api/items', {
                 method: 'POST',
+                headers: {
+                    'x-simply-do-uid': this.uid
+                },
                 body: JSON.stringify(item)
             }).then(function (response) {
                 return response.json()
@@ -39,6 +52,9 @@ var app = new Vue({
         updateItem: function (item) {
             return fetch('/api/items/' + item.id, {
                 method: 'PUT',
+                headers: {
+                    'x-simply-do-uid': this.uid
+                },
                 body: JSON.stringify(item)
             }).then(function (response) {
                 return response.json()
@@ -47,7 +63,10 @@ var app = new Vue({
         },
         deleteItem: function (item) {
             fetch('/api/items/' + item.id, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'x-simply-do-uid': this.uid
+                }
             }).then(function (response) {
                 return response.json()
             }).then(function (body) {
@@ -59,6 +78,10 @@ var app = new Vue({
             if (item.text === '') {
                 this.deleteItem(item)
             }
+        },
+        onUidSwitchClick: function () {
+            var uid = document.getElementById('uid-input').value
+            this.uid = uid ? uid : 'default'
         }
     },
     mounted: function () {

@@ -21,6 +21,11 @@ func NewMemoryStore() *MemoryStore {
 	}
 }
 
+// SetUser is a noop, here to satisfy Store inteface.
+func (m *MemoryStore) SetUser(uid string) error {
+	return nil
+}
+
 // GetAll returns all the items.
 func (m *MemoryStore) GetAll() []models.Item {
 	return m.items

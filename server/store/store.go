@@ -4,6 +4,7 @@ import "github.com/nickwu241/simply-do/server/models"
 
 // Store provides CRUD methods to the models.
 type Store interface {
+	SetUser(uid string) error
 	GetAll() []models.Item
 	Get(id string) models.Item
 	Create(item models.Item) models.Item

@@ -16,7 +16,7 @@ type Server interface {
 
 // NewServer returns an instance of Server.
 func NewServer() (Server, error) {
-	store, err := store.NewFirebaseStore()
+	store, err := store.NewFirebaseStore("")
 	if err != nil {
 		return nil, errors.Wrapf(err, "initializing firebase database")
 	}
@@ -32,7 +32,10 @@ func NewServer() (Server, error) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		next(w, r)
 	}
-	server := negroni.Classic().With(negroni.HandlerFunc(CORSMiddleware))
+	server := negroni.Classic().With(
+		negroni.HandlerFunc(CORSMiddleware),
+		negroni.HandlerFunc(api.setUserMiddleware),
+	)
 	server.UseHandler(router)
 	return server, nil
 }

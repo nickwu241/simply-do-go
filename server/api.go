@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/nickwu241/simply-do/server/models"
@@ -13,6 +14,14 @@ import (
 // API contains the handlers for the server.
 type API struct {
 	store store.Store
+}
+
+func (api *API) setUserMiddleware(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	if strings.HasPrefix(r.URL.Path, "/api") {
+		uid := r.Header.Get("x-simply-do-uid")
+		api.store.SetUser(uid)
+	}
+	next(w, r)
 }
 
 func (api *API) getItems(w http.ResponseWriter, r *http.Request) {
