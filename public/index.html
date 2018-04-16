@@ -18,8 +18,8 @@
 <body>
   <div id="app">
     <div>Current List ID: {{ uid}} </div>
-    <input id="uid-input" placeholder="default">
-    <button @click="onUidSwitchClick">Go</button>
+    <input id="uid-input" placeholder="default" @keyup.enter="uidSync">
+    <button @click="uidSync">Go</button>
     <h3>Reminders</h3>
     <div>
       <div v-for="item in items">

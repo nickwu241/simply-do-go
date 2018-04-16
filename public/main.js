@@ -79,7 +79,7 @@ var app = new Vue({
                 this.deleteItem(item)
             }
         },
-        onUidSwitchClick: function () {
+        uidSync: function () {
             var uid = document.getElementById('uid-input').value
             this.uid = uid ? uid : 'default'
         }
