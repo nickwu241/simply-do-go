@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	"firebase.google.com/go/db"
@@ -43,6 +44,7 @@ func (f *FirebaseStore) SetUser(uid string) error {
 	if uid == "" {
 		uid = "default"
 	}
+	uid = strings.ToLower(uid)
 
 	// Get the user.
 	f.userRoot = f.db.NewRef("/" + uid)
