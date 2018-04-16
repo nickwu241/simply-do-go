@@ -11,11 +11,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	firebaseURL     = "https://simply-do.firebaseio.com"
-	credentialsFile = "simply-do-firebase-adminsdk.json"
-)
-
 // FirebaseStore implements Store using Firebase as persistent storage.
 type FirebaseStore struct {
 	globalID int
