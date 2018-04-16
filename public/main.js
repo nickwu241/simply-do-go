@@ -2,15 +2,19 @@ var app = new Vue({
     el: '#app',
     data: {
         items: [],
-        uid: 'default'
+        uid: getCookie('x-simply-do-uid', 'default')
     },
     computed: {
+        uidInputDisplayValue: function () {
+            return this.uid !== 'default' ? this.uid : ''
+        },
         lastItem: function () {
             return this.items ? this.items[this.items.length - 1] : null
         }
     },
     watch: {
         uid: function (newValue) {
+            setCookie('x-simply-do-uid', newValue, 1)
             this.getItems()
         }
     },
@@ -88,3 +92,26 @@ var app = new Vue({
         this.getItems()
     }
 })
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date()
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000))
+    var expires = 'expires=' + d.toUTCString()
+    document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/'
+}
+
+function getCookie(cname, defaultvalue) {
+    var name = cname + '='
+    var decodedCookie = decodeURIComponent(document.cookie)
+    var ca = decodedCookie.split(';')
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1)
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length)
+        }
+    }
+    return defaultvalue
+}
