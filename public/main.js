@@ -95,22 +95,16 @@ var app = new Vue({
     methods: {
         addNewItem() {
             var newItem = {
+                id: 'id-placeholder',
                 checked: false,
                 text: '',
-                uniquePlaceholderId: guid()
+                time_created: 'time_created-placeholder'
             }
             this.items.push(newItem)
             Vue.nextTick().then(function () {
                 app.$refs[app.lastItem.id][0].focus()
             })
             api.createItem().then(function (item) {
-                if (app._shouldClean(newItem.uniquePlaceholderId)) {
-                    console.debug("CREATE finished: should clean...")
-                    api.deleteItem(item).then(function () {
-                        console.debug("DELETE finished:", item.id, item)
-                    })
-                    return
-                }
                 newItem.id = item.id
                 newItem.time_created = item.time_created
                 console.debug("CREATE finished: updated new item:", newItem.id, newItem)
@@ -122,11 +116,7 @@ var app = new Vue({
             workQueue.addUpdate(item)
         },
         deleteItem: function (item) {
-            if (item.id) {
-                api.deleteItem(item).then(function () {
-                    console.debug("DELETE finished:", item.id, item)
-                })
-            }
+            this._executeAsyncApiDeleteItem(item)
             this.items.splice(this.items.indexOf(item), 1)
         },
         deleteItemIfEmpty: function (item) {
@@ -138,13 +128,17 @@ var app = new Vue({
             var uid = document.getElementById('uid-input').value
             this.uid = uid ? uid : 'default'
         },
-        _shouldClean(uniquePlaceholderId) {
-            for (var i = 0; i < this.items.length; i++) {
-                if (this.items[i].uniquePlaceholderId === uniquePlaceholderId) {
-                    return false
+        _executeAsyncApiDeleteItem(item) {
+            setTimeout(function () {
+                if (item.id === 'id-placeholder') {
+                    console.debug('DELETE id-placeholder: delaying...')
+                    app._executeApiDeleteItem(item)
+                    return
                 }
-            }
-            return true
+                api.deleteItem(item).then(function () {
+                    console.debug("DELETE finished:", item.id, item)
+                })
+            }, 1000)
         }
     },
     mounted: function () {
@@ -175,15 +169,4 @@ function getCookie(cname, defaultvalue) {
         }
     }
     return defaultvalue
-}
-
-function guid() {
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-        s4() + '-' + s4() + s4() + s4();
-}
-
-function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
 }
