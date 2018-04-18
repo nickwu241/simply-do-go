@@ -1,5 +1,24 @@
+@font-face {
+    font-family: "HK Grotesk";
+    src: url("hk-grotesk/HKGRotesk-Medium.otf");
+}
+
 #app {
     text-align: center;
+    font-family: "HK Grotesk";
+}
+
+input[type=text] {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #000000;
+    font-size: 16px;
+    font-family: "HK Grotesk";
+}
+
+.item-input {
+    border-bottom: 0px !important;
+    margin-bottom: 8px;
 }
 
 .green {
@@ -24,3 +43,4 @@
 .round-btn {
     border-radius: 100%;
 }
+
