@@ -1,6 +1,6 @@
 @font-face {
     font-family: "HK Grotesk";
-    src: url("hk-grotesk/HKGRotesk-Medium.otf");
+    src: url("hk-grotesk/HKGrotesk-Medium.otf");
 }
 
 #app {
@@ -43,4 +43,3 @@ input[type=text] {
 .round-btn {
     border-radius: 100%;
 }
-
