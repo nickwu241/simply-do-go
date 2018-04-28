@@ -29,10 +29,12 @@
             <label></label>
           </div>
         </div>
-        <input type="text" v-model="item.text" class="item-input" :class="{strike: item.checked}" @input="updateDebounced(item)" @blur="deleteItemIfEmpty(item)" :ref="item.id">
+        <input type="text" v-model="item.text" class="item-input" :class="{strike: item.checked}" @input="updateDebounced(item)"
+          @blur="deleteItemIfEmpty(item)" :ref="item.id">
         <button class="round-btn" :class="{green: item.checked}" @click="deleteItem(item)">X</button>
       </div>
-      <input type="text" v-if="!lastItem || lastItem.text !== ''" @focus="addNewItem">
+      <input type="text" v-if="!lastItem || lastItem.text !== ''" placeholder="+ add a reminder" @focus="addNewItem" onfocus="this.placeholder=''"
+        onblur="this.placeholder='+ add a reminder'">
     </div>
   </div>
   <script src="main.js"></script>
