@@ -16,6 +16,7 @@ clean: ## Cleans up the built binaries
 deploy: build-docker ## Deploys to Heroku. Requires to be logged in on Heroku Registry
 	docker tag simply-do:latest registry.heroku.com/$(HEROKU_APP_NAME)/web
 	docker push registry.heroku.com/$(HEROKU_APP_NAME)/web
+	heroku container:release web --app $(HEROKU_APP_NAME)
 
 run: ## Starts the server locally on port 8080 or $PORT if set
 	go run main.go server
