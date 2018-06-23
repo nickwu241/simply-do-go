@@ -6,56 +6,48 @@ class API {
     getItems() {
         console.debug('GET /api/items', this.uid)
         return fetch('/api/items', {
-            headers: this._default_headers()
-        }).then(function (response) {
-            return response.json()
-        }).catch(function (e) {
-            console.error(e)
-        })
+                headers: this._default_headers
+            })
+            .then(res => res.json())
+            .catch(e => console.error(e))
     }
 
     createItem() {
         console.debug('POST /api/items', this.uid)
         return fetch('/api/items', {
-            method: 'POST',
-            headers: this._default_headers(),
-            body: JSON.stringify({
-                checked: false,
-                text: ''
+                method: 'POST',
+                headers: this._default_headers,
+                body: JSON.stringify({
+                    checked: false,
+                    text: ''
+                })
             })
-        }).then(function (response) {
-            return response.json()
-        }).catch(function (e) {
-            console.error(e)
-        })
+            .then(res => res.json())
+            .catch(e => console.error(e))
     }
 
     updateItem(item) {
         console.debug('PUT /api/items', this.uid)
         return fetch('/api/items/' + item.id, {
-            method: 'PUT',
-            headers: this._default_headers(),
-            body: JSON.stringify(item)
-        }).then(function (response) {
-            return response.json()
-        }).catch(function (e) {
-            console.error(e)
-        })
+                method: 'PUT',
+                headers: this._default_headers,
+                body: JSON.stringify(item)
+            })
+            .then(res => res.json())
+            .catch(e => console.error(e))
     }
 
     deleteItem(item) {
         console.debug('DELETE /api/items', this.uid, item)
         return fetch('/api/items/' + item.id, {
-            method: 'DELETE',
-            headers: this._default_headers()
-        }).then(function (response) {
-            return response.json()
-        }).catch(function (e) {
-            console.error(e)
-        })
+                method: 'DELETE',
+                headers: this._default_headers
+            })
+            .then(res => res.json())
+            .catch(e => console.error(e))
     }
 
-    _default_headers() {
+    get _default_headers() {
         return {
             'x-simply-do-uid': this.uid
         }
