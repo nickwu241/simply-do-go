@@ -7,6 +7,6 @@ COPY public public
 COPY simply-do .
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
-CMD ["/app/simply-do"]
+CMD ["/app/simply-do", "server"]
 
 EXPOSE 8080
