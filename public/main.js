@@ -1,6 +1,9 @@
-let api = {
-    uid: getCookie('x-simply-do-uid', 'default'),
-    getItems: function () {
+class API {
+    constructor() {
+        this.uid = getCookie('x-simply-do-uid', 'default')
+    }
+
+    getItems() {
         console.debug('GET /api/items', this.uid)
         return fetch('/api/items', {
             headers: this._default_headers()
@@ -9,8 +12,9 @@ let api = {
         }).catch(function (e) {
             console.error(e)
         })
-    },
-    createItem: function () {
+    }
+
+    createItem() {
         console.debug('POST /api/items', this.uid)
         return fetch('/api/items', {
             method: 'POST',
@@ -24,8 +28,9 @@ let api = {
         }).catch(function (e) {
             console.error(e)
         })
-    },
-    updateItem: function (item) {
+    }
+
+    updateItem(item) {
         console.debug('PUT /api/items', this.uid)
         return fetch('/api/items/' + item.id, {
             method: 'PUT',
@@ -36,8 +41,9 @@ let api = {
         }).catch(function (e) {
             console.error(e)
         })
-    },
-    deleteItem: function (item) {
+    }
+
+    deleteItem(item) {
         console.debug('DELETE /api/items', this.uid, item)
         return fetch('/api/items/' + item.id, {
             method: 'DELETE',
@@ -47,27 +53,36 @@ let api = {
         }).catch(function (e) {
             console.error(e)
         })
-    },
-    _default_headers: function () {
+    }
+
+    _default_headers() {
         return {
             'x-simply-do-uid': this.uid
         }
-    },
+    }
 }
 
-let workQueue = {
-    addUpdate: function (item) {
-        clearTimeout(this[item.id])
-        this[item.id] = setTimeout(function () {
+class WorkQueue {
+    constructor(api) {
+        this.api = api
+        this.workMap = {}
+    }
+
+    enqueueUpdate(item) {
+        clearTimeout(this.workMap[item.id])
+        this.workMap[item.id] = setTimeout(() => {
             if (item.text !== '') {
-                api.updateItem(item).then(function (item) {
+                api.updateItem(item).then(item => {
                     console.debug("UPDATE finished:", item)
-                    delete workQueue[item.id]
+                    delete this.workMap[item.id]
                 })
             }
         }, 1000)
     }
 }
+
+api = new API()
+workQueue = new WorkQueue(api)
 
 let app = new Vue({
     el: '#app',
@@ -113,7 +128,7 @@ let app = new Vue({
             })
         },
         updateDebounced: function (item) {
-            workQueue.addUpdate(item)
+            workQueue.enqueueUpdate(item)
         },
         deleteItem: function (item) {
             this._executeAsyncApiDeleteItem(item)
