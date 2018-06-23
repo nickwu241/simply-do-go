@@ -100,6 +100,7 @@ func (f *FirebaseStore) Get(id string) models.Item {
 func (f *FirebaseStore) Create(item models.Item) models.Item {
 	item.ID = f.nextID()
 	item.TimeCreated = time.Now()
+	item.TimeUpdated = item.TimeCreated
 	if err := f.userRoot.Child("items/"+item.ID).Set(context.Background(), item); err != nil {
 		fmt.Printf("error creating item: %v\n", err)
 		return models.Item{}
@@ -110,6 +111,7 @@ func (f *FirebaseStore) Create(item models.Item) models.Item {
 // Update returns the updated item if the id exists, otherwise an an empty item.
 func (f *FirebaseStore) Update(id string, item models.Item) models.Item {
 	item.ID = id
+	item.TimeUpdated = time.Now()
 	if err := f.userRoot.Child("items/"+id).Set(context.Background(), item); err != nil {
 		fmt.Printf("error updating item: %v\n", err)
 		return models.Item{}

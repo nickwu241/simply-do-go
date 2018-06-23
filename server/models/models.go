@@ -8,4 +8,5 @@ type Item struct {
 	Checked     bool      `json:"checked"`
 	Text        string    `json:"text"`
 	TimeCreated time.Time `json:"time_created"`
+	TimeUpdated time.Time `json:"time_updated"`
 }
