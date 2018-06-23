@@ -1,4 +1,4 @@
-var api = {
+let api = {
     uid: getCookie('x-simply-do-uid', 'default'),
     getItems: function () {
         console.debug('GET /api/items', this.uid)
@@ -55,7 +55,7 @@ var api = {
     },
 }
 
-var workQueue = {
+let workQueue = {
     addUpdate: function (item) {
         clearTimeout(this[item.id])
         this[item.id] = setTimeout(function () {
@@ -69,7 +69,7 @@ var workQueue = {
     }
 }
 
-var app = new Vue({
+let app = new Vue({
     el: '#app',
     data: {
         items: [],
@@ -94,7 +94,7 @@ var app = new Vue({
     },
     methods: {
         addNewItem() {
-            var newItem = {
+            let newItem = {
                 id: 'id-placeholder',
                 checked: false,
                 text: '',
@@ -125,7 +125,7 @@ var app = new Vue({
             }
         },
         uidSync: function () {
-            var uid = document.getElementById('uid-input').value
+            let uid = document.getElementById('uid-input').value
             this.uid = uid ? uid : 'default'
         },
         _executeAsyncApiDeleteItem(item) {
@@ -149,18 +149,18 @@ var app = new Vue({
 })
 
 function setCookie(cname, cvalue, exdays) {
-    var d = new Date()
+    let d = new Date()
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000))
-    var expires = 'expires=' + d.toUTCString()
+    let expires = 'expires=' + d.toUTCString()
     document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/'
 }
 
 function getCookie(cname, defaultvalue) {
-    var name = cname + '='
-    var decodedCookie = decodeURIComponent(document.cookie)
-    var ca = decodedCookie.split(';')
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
+    let name = cname + '='
+    let decodedCookie = decodeURIComponent(document.cookie)
+    let ca = decodedCookie.split(';')
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
         while (c.charAt(0) == ' ') {
             c = c.substring(1)
         }
