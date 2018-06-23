@@ -83,20 +83,19 @@ let app = new Vue({
         uid: getCookie('x-simply-do-uid', 'default')
     },
     computed: {
-        uidInputDisplayValue: function () {
+        uidInputDisplayValue() {
             return this.uid !== 'default' ? this.uid : ''
         },
-        lastItem: function () {
+        lastItem() {
             return this.items ? this.items[this.items.length - 1] : null
         }
     },
     watch: {
-        uid: function (newValue) {
+        uid(newValue) {
             setCookie('x-simply-do-uid', newValue, 1)
             api.uid = newValue
-            api.getItems().then(function (items) {
-                app.items = items
-            })
+            api.getItems()
+                .then(items => this.items = items)
         }
     },
     methods: {
@@ -108,50 +107,49 @@ let app = new Vue({
                 time_created: 'time_created-placeholder'
             }
             this.items.push(newItem)
-            Vue.nextTick().then(function () {
-                app.$refs[app.lastItem.id][0].focus()
-            })
-            api.createItem().then(function (item) {
-                newItem.id = item.id
-                newItem.time_created = item.time_created
-                console.debug("CREATE finished: updated new item:", newItem.id, newItem)
-            }).catch(function (e) {
-                console.error("CREATE errored:", e)
-            })
+
+            Vue.nextTick()
+                .then(() => this.$refs[this.lastItem.id][0].focus())
+
+            api.createItem()
+                .then(item => {
+                    newItem.id = item.id
+                    newItem.time_created = item.time_created
+                    console.debug("CREATE finished:", newItem.id, newItem)
+                })
+                .catch(e => console.error("CREATE errored:", e))
         },
-        updateDebounced: function (item) {
+        updateDebounced(item) {
             workQueue.enqueueUpdate(item)
         },
-        deleteItem: function (item) {
+        deleteItem(item) {
             this._executeAsyncApiDeleteItem(item)
             this.items.splice(this.items.indexOf(item), 1)
         },
-        deleteItemIfEmpty: function (item) {
+        deleteItemIfEmpty(item) {
             if (item.text === '') {
                 this.deleteItem(item)
             }
         },
-        uidSync: function () {
+        uidSync() {
             let uid = document.getElementById('uid-input').value
             this.uid = uid ? uid : 'default'
         },
         _executeAsyncApiDeleteItem(item) {
-            setTimeout(function () {
+            setTimeout(() => {
                 if (item.id === 'id-placeholder') {
-                    console.debug('DELETE id-placeholder: delaying...')
-                    app._executeApiDeleteItem(item)
+                    console.debug('DELETE id-placeholder: delaying for another 1 second...')
+                    this._executeAsyncApiDeleteItem(item)
                     return
                 }
-                api.deleteItem(item).then(function () {
-                    console.debug("DELETE finished:", item.id, item)
-                })
+                api.deleteItem(item)
+                    .then(() => console.debug("DELETE finished:", item.id, item))
             }, 1000)
         }
     },
-    mounted: function () {
-        api.getItems().then(function (items) {
-            app.items = items
-        })
+    mounted() {
+        api.getItems()
+            .then(items => this.items = items)
     }
 })
 
