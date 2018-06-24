@@ -19,7 +19,8 @@ type API struct {
 func (api *API) setUserMiddleware(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	if strings.HasPrefix(r.URL.Path, "/api") {
 		uid := r.Header.Get("x-simply-do-uid")
-		api.store.SetUser(uid)
+		lid := r.Header.Get("x-simply-do-lid")
+		api.store.SetUserList(uid, lid)
 	}
 	next(w, r)
 }
