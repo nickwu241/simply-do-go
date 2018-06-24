@@ -85,6 +85,12 @@ const List = {
         <div>
             <button @click="generateRandomId">Generate Random ID</button>
         </div>
+        <div class="tooltip">
+            <button @click="copyToClipboard" @mouseout="showCopiedToClipboard">
+                <span class="tooltiptext" id="myTooltip">Copy to Clipboard</span>
+                Share
+            </button>
+        </div>
         <h3>Reminders</h3>
         <div v-for="item in items">
         <div class="pretty p-default p-thick p-round">
@@ -169,6 +175,21 @@ const List = {
         },
         generateRandomId() {
             this.uid = guid()
+        },
+        copyToClipboard() {
+            const copyText = `https://simply-do.herokuapp.com/${this.$route.path}`
+            navigator.clipboard.writeText(copyText).then(function () {
+                console.log(`copied ${copyText} to clipboard!`)
+            }, function (err) {
+                console.error('error copying to clipboard:', err)
+            })
+
+            let tooltip = document.getElementById("myTooltip")
+            tooltip.innerHTML = "Copied Link to Clipboard"
+        },
+        showCopiedToClipboard() {
+            let tooltip = document.getElementById("myTooltip")
+            tooltip.innerHTML = "Copy to Clipboard"
         }
     },
     mounted() {
