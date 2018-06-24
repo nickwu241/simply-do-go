@@ -76,26 +76,32 @@ class WorkQueue {
 api = new API()
 workQueue = new WorkQueue(api)
 
-let app = new Vue({
-    el: '#app',
-    data: {
-        items: [],
-        uid: getCookie('x-simply-do-uid', 'default')
-    },
-    computed: {
-        uidInputDisplayValue() {
-            return this.uid !== 'default' ? this.uid : ''
-        },
-        lastItem() {
-            return this.items ? this.items[this.items.length - 1] : null
+const List = {
+    template: `
+    <div>
+        <div v-for="item in items">
+        <div class="pretty p-default p-thick p-round">
+            <input type="checkbox" v-model="item.checked" @change="updateDebounced(item)">
+            <div class="state p-success">
+            <label></label>
+            </div>
+        </div>
+        <input type="text" v-model="item.text" class="item-input" :class="{strike: item.checked}" @input="updateDebounced(item)"
+            @blur="deleteItemIfEmpty(item)" :ref="item.id">
+        <button class="round-btn" :class="{green: item.checked}" @click="deleteItem(item)">X</button>
+        </div>
+        <input type="text" v-if="!lastItem || lastItem.text !== ''" placeholder="+ add a reminder" @focus="addNewItem" onfocus="this.placeholder=''"
+        onblur="this.placeholder='+ add a reminder'">
+    </div>
+    `,
+    data: function () {
+        return {
+            items: []
         }
     },
-    watch: {
-        uid(newValue) {
-            setCookie('x-simply-do-uid', newValue, 1)
-            api.uid = newValue
-            api.getItems()
-                .then(items => this.items = items)
+    computed: {
+        lastItem() {
+            return this.items ? this.items[this.items.length - 1] : null
         }
     },
     methods: {
@@ -131,10 +137,6 @@ let app = new Vue({
                 this.deleteItem(item)
             }
         },
-        uidSync() {
-            let uid = document.getElementById('uid-input').value
-            this.uid = uid ? uid : 'default'
-        },
         _executeAsyncApiDeleteItem(item) {
             setTimeout(() => {
                 if (item.id === 'id-placeholder') {
@@ -150,8 +152,53 @@ let app = new Vue({
     mounted() {
         api.getItems()
             .then(items => this.items = items)
+    },
+    beforeRouteUpdate(to, from, next) {
+        api.getItems()
+            .then(items => this.items = items)
+        next()
     }
+}
+
+const router = new VueRouter({
+    mode: 'history',
+    routes: [{
+        path: '/list/:id',
+        component: List
+    }]
 })
+
+const app = new Vue({
+    router,
+    data: {
+        uid: getCookie('x-simply-do-uid', 'default')
+    },
+    computed: {
+        uidInputDisplayValue() {
+            return this.uid !== 'default' ? this.uid : ''
+        }
+    },
+    watch: {
+        uid(newValue) {
+            setCookie('x-simply-do-uid', newValue, 1)
+            api.uid = newValue
+        }
+    },
+    methods: {
+        uidSync() {
+            let uid = document.getElementById('uid-input').value
+            this.uid = uid ? uid : 'default'
+            this.$router.push({
+                path: `/list/${this.uid}`
+            })
+        },
+    },
+    mounted() {
+        this.$router.push({
+            path: `/list/${this.uid}`
+        })
+    }
+}).$mount('#app')
 
 function setCookie(cname, cvalue, exdays) {
     let d = new Date()
