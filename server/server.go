@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/nickwu241/simply-do/server/store"
@@ -27,6 +28,14 @@ func NewServer() (Server, error) {
 	router.HandleFunc("/api/items", api.createItem).Methods("POST")
 	router.HandleFunc("/api/items/{id}", api.updateItem).Methods("PUT")
 	router.HandleFunc("/api/items/{id}", api.deleteItem).Methods("DELETE")
+	defaultNotFoundHandler := router.NotFoundHandler
+	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.HasPrefix("/#/", r.URL.Path) {
+			http.Redirect(w, r, "/#/"+r.URL.Path, http.StatusPermanentRedirect)
+		} else {
+			defaultNotFoundHandler.ServeHTTP(w, r)
+		}
+	})
 
 	CORSMiddleware := func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
