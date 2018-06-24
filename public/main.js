@@ -6,8 +6,8 @@ class API {
     getItems() {
         console.debug('GET /api/items', this.uid)
         return fetch('/api/items', {
-            headers: this._default_headers
-        })
+                headers: this._default_headers
+            })
             .then(res => res.json())
             .catch(e => console.error(e))
     }
@@ -15,13 +15,13 @@ class API {
     createItem() {
         console.debug('POST /api/items', this.uid)
         return fetch('/api/items', {
-            method: 'POST',
-            headers: this._default_headers,
-            body: JSON.stringify({
-                checked: false,
-                text: ''
+                method: 'POST',
+                headers: this._default_headers,
+                body: JSON.stringify({
+                    checked: false,
+                    text: ''
+                })
             })
-        })
             .then(res => res.json())
             .catch(e => console.error(e))
     }
@@ -29,10 +29,10 @@ class API {
     updateItem(item) {
         console.debug('PUT /api/items', this.uid)
         return fetch('/api/items/' + item.id, {
-            method: 'PUT',
-            headers: this._default_headers,
-            body: JSON.stringify(item)
-        })
+                method: 'PUT',
+                headers: this._default_headers,
+                body: JSON.stringify(item)
+            })
             .then(res => res.json())
             .catch(e => console.error(e))
     }
@@ -40,9 +40,9 @@ class API {
     deleteItem(item) {
         console.debug('DELETE /api/items', this.uid, item)
         return fetch('/api/items/' + item.id, {
-            method: 'DELETE',
-            headers: this._default_headers
-        })
+                method: 'DELETE',
+                headers: this._default_headers
+            })
             .then(res => res.json())
             .catch(e => console.error(e))
     }
@@ -182,7 +182,7 @@ const List = {
             this.uid = guid()
         },
         copyToClipboard() {
-            const copyText = `https://simply-do.herokuapp.com/${this.$route.path}`
+            const copyText = `https://simply-do.herokuapp.com${this.$route.path}`
             navigator.clipboard.writeText(copyText).then(function () {
                 console.log(`copied ${copyText} to clipboard!`)
             }, function (err) {
