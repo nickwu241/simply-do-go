@@ -39,10 +39,19 @@ func NewServer() (Server, error) {
 
 	CORSMiddleware := func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, x-simply-do-uid")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(200)
+			return
+		}
 		next(w, r)
 	}
-	server := negroni.Classic().With(
+	server := negroni.New().With(
 		negroni.HandlerFunc(CORSMiddleware),
+		negroni.NewRecovery(),
+		negroni.NewLogger(),
+		negroni.NewStatic(http.Dir("public")),
 		negroni.HandlerFunc(api.setUserMiddleware),
 	)
 	server.UseHandler(router)
