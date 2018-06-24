@@ -93,15 +93,15 @@ const List = {
         </div>
         <h3>Reminders</h3>
         <div v-for="item in items">
-        <div class="pretty p-default p-thick p-round">
-            <input type="checkbox" v-model="item.checked" @change="updateDebounced(item)">
-            <div class="state p-success">
-            <label></label>
+            <div class="pretty p-default p-thick p-round">
+                <input type="checkbox" v-model="item.checked" @change="updateDebounced(item)">
+                <div class="state p-success">
+                    <label></label>
+                </div>
             </div>
-        </div>
-        <input type="text" v-model="item.text" class="item-input" :class="{strike: item.checked}" @input="updateDebounced(item)"
-            @blur="deleteItemIfEmpty(item)" :ref="item.id">
-        <button class="round-btn" :class="{green: item.checked}" @click="deleteItem(item)">X</button>
+            <input type="text" v-model="item.text" class="item-input" :class="{strike: item.checked}" @input="updateDebounced(item)"
+                @blur="deleteItemIfEmpty(item)" :ref="item.id">
+            <button class="round-btn" :class="{green: item.checked}" @click="deleteItem(item)">X</button>
         </div>
         <input type="text" v-if="!lastItem || lastItem.text !== ''" placeholder="+ add a reminder" @focus="addNewItem" onfocus="this.placeholder=''"
         onblur="this.placeholder='+ add a reminder'">
