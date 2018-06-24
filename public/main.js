@@ -82,6 +82,9 @@ const List = {
         <div>Current List ID: {{ uid }} </div>
         <input type="text" id="uid-input" placeholder="default" :value="uidInputDisplayValue" @keyup.enter="uidSync">
         <button @click="uidSync">Go</button>
+        <div>
+            <button @click="generateRandomId">Generate Random ID</button>
+        </div>
         <h3>Reminders</h3>
         <div v-for="item in items">
         <div class="pretty p-default p-thick p-round">
@@ -163,6 +166,9 @@ const List = {
             this.$router.push({
                 path: `/list/${this.uid}`
             })
+        },
+        generateRandomId() {
+            this.uid = guid()
         }
     },
     mounted() {
@@ -223,4 +229,13 @@ function getCookie(cname, defaultvalue) {
         }
     }
     return defaultvalue
+}
+
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1)
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4()
 }
