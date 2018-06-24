@@ -20,7 +20,11 @@ func (api *API) setUserMiddleware(w http.ResponseWriter, r *http.Request, next h
 	if strings.HasPrefix(r.URL.Path, "/api") {
 		uid := r.Header.Get("x-simply-do-uid")
 		lid := r.Header.Get("x-simply-do-lid")
-		api.store.SetUserList(uid, lid)
+		userPassword := r.Header.Get("x-simply-do-user-password")
+		if err := api.store.SetUserList(uid, lid, userPassword); err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
 	}
 	next(w, r)
 }

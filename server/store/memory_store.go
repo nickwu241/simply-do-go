@@ -22,7 +22,7 @@ func NewMemoryStore() *MemoryStore {
 }
 
 // SetUserList is a noop, here to satisfy Store inteface.
-func (m *MemoryStore) SetUserList(uid string, lid string) error {
+func (m *MemoryStore) SetUserList(uid, lid, password string) error {
 	return nil
 }
 

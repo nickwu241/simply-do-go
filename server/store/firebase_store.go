@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"firebase.google.com/go/db"
+	"github.com/nickwu241/simply-do/server/helpers"
 	"github.com/nickwu241/simply-do/server/models"
 	"github.com/pkg/errors"
 )
@@ -21,7 +22,7 @@ type FirebaseStore struct {
 }
 
 // NewFirebaseStore returns an instance of FirebaseStore.
-func NewFirebaseStore(uid string, lid string) (*FirebaseStore, error) {
+func NewFirebaseStore() (*FirebaseStore, error) {
 	db, err := getDB()
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func NewFirebaseStore(uid string, lid string) (*FirebaseStore, error) {
 		db:       db,
 	}
 
-	if err := store.SetUserList(uid, lid); err != nil {
+	if err := store.SetUserList("default", "", ""); err != nil {
 		return nil, err
 	}
 	return store, nil
@@ -41,7 +42,7 @@ func NewFirebaseStore(uid string, lid string) (*FirebaseStore, error) {
 // SetUserList initializes the Store to use the UID and LID for all subsequent operations.
 // If UID is empty, "default" will be used.
 // If the UID doesn't exist, it will be created.
-func (f *FirebaseStore) SetUserList(uid string, lid string) error {
+func (f *FirebaseStore) SetUserList(uid, lid, password string) error {
 	if uid == "" {
 		uid = "default"
 	}
@@ -68,6 +69,10 @@ func (f *FirebaseStore) SetUserList(uid string, lid string) error {
 		return errors.Wrap(err, "setting up global id")
 	}
 	f.globalID = globalID
+
+	if f.userHasPassword() && !f.isCorrectPassword(password) {
+		return errors.Errorf("access unauthorized for list %q", uid)
+	}
 	return nil
 }
 
@@ -145,4 +150,24 @@ func (f *FirebaseStore) updateAndGetLastAccessTime() time.Time {
 		fmt.Printf("error updating user last_accessed_time with %q: %v\n", now, err)
 	}
 	return now
+}
+
+func (f *FirebaseStore) userHasPassword() bool {
+	var passwordHash string
+	if err := f.userRoot.Child("password_hash").Get(context.Background(), &passwordHash); err != nil {
+		fmt.Printf("error retriving user password_hash: %v\n", err)
+		// Assume user has a password.
+		return true
+	}
+	return passwordHash != ""
+}
+
+func (f *FirebaseStore) isCorrectPassword(password string) bool {
+	var passwordHash string
+	if err := f.userRoot.Child("password_hash").Get(context.Background(), &passwordHash); err != nil {
+		fmt.Printf("error retriving user password_hash: %v\n", err)
+		return false
+	}
+	passwordHasher := helpers.DefaultPasswordHasher{}
+	return passwordHasher.VerifyPassword(passwordHash, password)
 }

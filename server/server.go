@@ -16,7 +16,7 @@ type Server interface {
 
 // NewServer returns an instance of Server.
 func NewServer() (Server, error) {
-	store, err := store.NewFirebaseStore("", "")
+	store, err := store.NewFirebaseStore()
 	if err != nil {
 		return nil, errors.Wrapf(err, "initializing firebase database")
 	}
