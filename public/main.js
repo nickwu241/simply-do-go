@@ -79,6 +79,10 @@ workQueue = new WorkQueue(api)
 const List = {
     template: `
     <div>
+        <div>Current List ID: {{ uid }} </div>
+        <input type="text" id="uid-input" placeholder="default" :value="uidInputDisplayValue" @keyup.enter="uidSync">
+        <button @click="uidSync">Go</button>
+        <h3>Reminders</h3>
         <div v-for="item in items">
         <div class="pretty p-default p-thick p-round">
             <input type="checkbox" v-model="item.checked" @change="updateDebounced(item)">
@@ -96,12 +100,16 @@ const List = {
     `,
     data: function () {
         return {
-            items: []
+            items: [],
+            uid: getCookie('x-simply-do-uid', 'default')
         }
     },
     computed: {
         lastItem() {
             return this.items ? this.items[this.items.length - 1] : null
+        },
+        uidInputDisplayValue() {
+            return this.uid !== 'default' ? this.uid : ''
         }
     },
     methods: {
@@ -147,16 +155,31 @@ const List = {
                 api.deleteItem(item)
                     .then(() => console.debug("DELETE finished:", item.id, item))
             }, 1000)
+        },
+        uidSync() {
+            let uid = document.getElementById('uid-input').value
+            this.uid = uid ? uid : 'default'
+            api.uid = this.uid
+            this.$router.push({
+                path: `/list/${this.uid}`
+            })
         }
     },
     mounted() {
+        if (this.$route.params.id) {
+            this.uid = this.$route.params.id
+            setCookie('x-simply-do-uid', this.uid, 1)
+        }
+        api.uid = this.uid
         api.getItems()
             .then(items => this.items = items)
     },
     beforeRouteUpdate(to, from, next) {
         console.debug('to', to)
         console.debug('from', from)
-        api.uid = to.params.id
+        this.uid = to.params.id
+        setCookie('x-simply-do-uid', this.uid, 1)
+        api.uid = this.uid
         api.getItems()
             .then(items => this.items = items)
         next()
@@ -172,33 +195,10 @@ const router = new VueRouter({
 
 const app = new Vue({
     router,
-    data: {
-        uid: getCookie('x-simply-do-uid', 'default')
-    },
-    computed: {
-        uidInputDisplayValue() {
-            return this.uid !== 'default' ? this.uid : ''
-        }
-    },
-    watch: {
-        uid(newValue) {
-            setCookie('x-simply-do-uid', newValue, 1)
-            api.uid = newValue
-        }
-    },
-    methods: {
-        uidSync() {
-            let uid = document.getElementById('uid-input').value
-            this.uid = uid ? uid : 'default'
-            this.$router.push({
-                path: `/list/${this.uid}`
-            })
-        },
-    },
     mounted() {
-        this.$router.push({
-            path: `/list/${this.uid}`
-        })
+        if (this.$route.path === '/') {
+            this.$router.push(`list/${getCookie('x-simply-do-uid', 'default')}`)
+        }
     }
 }).$mount('#app')
 

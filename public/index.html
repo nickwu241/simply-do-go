@@ -18,10 +18,6 @@
 
 <body>
   <div id="app">
-    <div>Current List ID: {{ uid }} </div>
-    <input type="text" id="uid-input" placeholder="default" :value="uidInputDisplayValue" @keyup.enter="uidSync">
-    <button @click="uidSync">Go</button>
-    <h3>Reminders</h3>
     <router-view></router-view>
   </div>
   <script src="main.js"></script>
