@@ -6,8 +6,8 @@ class API {
     getItems() {
         console.debug('GET /api/items', this.uid)
         return fetch('/api/items', {
-                headers: this._default_headers
-            })
+            headers: this._default_headers
+        })
             .then(res => res.json())
             .catch(e => console.error(e))
     }
@@ -15,13 +15,13 @@ class API {
     createItem() {
         console.debug('POST /api/items', this.uid)
         return fetch('/api/items', {
-                method: 'POST',
-                headers: this._default_headers,
-                body: JSON.stringify({
-                    checked: false,
-                    text: ''
-                })
+            method: 'POST',
+            headers: this._default_headers,
+            body: JSON.stringify({
+                checked: false,
+                text: ''
             })
+        })
             .then(res => res.json())
             .catch(e => console.error(e))
     }
@@ -29,10 +29,10 @@ class API {
     updateItem(item) {
         console.debug('PUT /api/items', this.uid)
         return fetch('/api/items/' + item.id, {
-                method: 'PUT',
-                headers: this._default_headers,
-                body: JSON.stringify(item)
-            })
+            method: 'PUT',
+            headers: this._default_headers,
+            body: JSON.stringify(item)
+        })
             .then(res => res.json())
             .catch(e => console.error(e))
     }
@@ -40,9 +40,9 @@ class API {
     deleteItem(item) {
         console.debug('DELETE /api/items', this.uid, item)
         return fetch('/api/items/' + item.id, {
-                method: 'DELETE',
-                headers: this._default_headers
-            })
+            method: 'DELETE',
+            headers: this._default_headers
+        })
             .then(res => res.json())
             .catch(e => console.error(e))
     }
@@ -79,31 +79,36 @@ workQueue = new WorkQueue(api)
 const List = {
     template: `
     <div>
-        <div>Current List ID: {{ uid }} </div>
-        <input type="text" id="uid-input" placeholder="default" :value="uidInputDisplayValue" @keyup.enter="uidSync">
-        <button @click="uidSync">Go</button>
-        <div>
-            <button @click="generateRandomId">Generate Random ID</button>
-        </div>
-        <div class="tooltip">
-            <button @click="copyToClipboard" @mouseout="showCopiedToClipboard">
-                <span class="tooltiptext" id="myTooltip">Copy to Clipboard</span>
-                Share
-            </button>
-        </div>
-        <h3>Reminders</h3>
+      <div>Current List ID: {{ uid }} </div>
+      <input type="text" id="uid-input" placeholder="default" :value="uidInputDisplayValue" @keyup.enter="uidSync">
+      <button @click="uidSync">Go</button>
+      <div>
+        <button @click="generateRandomId">Generate Random ID</button>
+      </div>
+      <div class="tooltip">
+        <button @click="copyToClipboard" @mouseout="showCopiedToClipboard">
+          <span class="tooltiptext" id="myTooltip">Copy to Clipboard</span>
+          Share
+        </button>
+      </div>
+      <h3>Reminders</h3>
+      <div id="listWithHandle">
         <div v-for="item in items">
+          <div class="list-group-item">
             <div class="pretty p-default p-thick p-round">
-                <input type="checkbox" v-model="item.checked" @change="updateDebounced(item)">
-                <div class="state p-success">
-                    <label></label>
-                </div>
+              <input type="checkbox" v-model="item.checked" @change="updateDebounced(item)">
+              <div class="state p-success">
+                <label></label>
+              </div>
             </div>
+            <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
             <input type="text" v-model="item.text" class="item-input" :class="{strike: item.checked}" @input="updateDebounced(item)"
-                @blur="deleteItemIfEmpty(item)" :ref="item.id">
+              @blur="deleteItemIfEmpty(item)" :ref="item.id">
             <button class="round-btn" :class="{green: item.checked}" @click="deleteItem(item)">X</button>
+          </div>
         </div>
-        <input type="text" v-if="!lastItem || lastItem.text !== ''" placeholder="+ add a reminder" @focus="addNewItem" onfocus="this.placeholder=''"
+      </div>
+      <input type="text" v-if="!lastItem || lastItem.text !== ''" placeholder="+ add a reminder" @focus="addNewItem" onfocus="this.placeholder=''"
         onblur="this.placeholder='+ add a reminder'">
     </div>
     `,
@@ -193,6 +198,13 @@ const List = {
         }
     },
     mounted() {
+        let el = document.getElementById('listWithHandle')
+        let sortable = Sortable.create(el)
+        Sortable.create(listWithHandle, {
+            handle: '.glyphicon-move',
+            animation: 150
+        })
+
         if (this.$route.params.id) {
             this.uid = this.$route.params.id
             setCookie('x-simply-do-uid', this.uid, 1)
@@ -210,6 +222,10 @@ const List = {
         api.getItems()
             .then(items => this.items = items)
         next()
+        Sortable.create(listWithHandle, {
+            handle: '.glyphicon-move',
+            animation: 150
+        });
     }
 }
 
