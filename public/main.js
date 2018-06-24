@@ -154,6 +154,9 @@ const List = {
             .then(items => this.items = items)
     },
     beforeRouteUpdate(to, from, next) {
+        console.debug('to', to)
+        console.debug('from', from)
+        api.uid = to.params.id
         api.getItems()
             .then(items => this.items = items)
         next()
@@ -161,7 +164,6 @@ const List = {
 }
 
 const router = new VueRouter({
-    mode: 'history',
     routes: [{
         path: '/list/:id',
         component: List
