@@ -1,0 +1,97 @@
+<template>
+  <div>
+    <div>Current List ID: {{ uid }} </div>
+    <input type="text" id="uid-input" placeholder="default" :value="uidInputDisplayValue" @keyup.enter="go">
+    <button @click="go">Go</button>
+    <div>
+      <button @click="generateRandomId">Generate Random ID</button>
+    </div>
+    <div class="tooltip">
+      <button @click="copyToClipboard" @mouseout="showCopiedToClipboard">
+        <span class="tooltiptext" id="myTooltip">Copy to Clipboard</span>
+        Share
+      </button>
+    </div>
+  </div>
+</template>
+
+<script>
+import uuidv4 from 'uuid/v4'
+
+export default {
+  name: 'Navbar',
+  data () {
+    return {
+      uid: ''
+    }
+  },
+  computed: {
+    uidInputDisplayValue () {
+      return this.uid !== 'default' ? this.uid : ''
+    }
+  },
+  methods: {
+    copyToClipboard () {
+      const copyText = `https://simply-do.herokuapp.com${this.$route.path}`
+      navigator.clipboard
+        .writeText(copyText)
+        .then(() => console.log(`copied ${copyText} to clipboard!`))
+        .catch(err => console.error('error copying to clipboard:', err))
+
+      let tooltip = document.getElementById('myTooltip')
+      tooltip.innerHTML = 'Copied Link to Clipboard!'
+    },
+    generateRandomId () {
+      this.uid = uuidv4()
+    },
+    go () {
+      let uid = document.getElementById('uid-input').value
+      this.uid = uid || 'default'
+      this.$router.push({ path: `/list/${this.uid}` })
+    },
+    showCopiedToClipboard () {
+      document.getElementById('myTooltip').innerHTML = 'Copy to Clipboard'
+    }
+  }
+}
+</script>
+
+<style scoped>
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
