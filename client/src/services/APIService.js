@@ -1,10 +1,11 @@
 export default class APIService {
-  constructor (uid) {
+  constructor(uid) {
     this.uid = uid
-    this.baseUrl = ''
+    this.baseUrl =
+      process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : ''
   }
 
-  getItems () {
+  getItems() {
     console.debug(`GET ${this.baseUrl}/api/items`, this.uid)
     return fetch(`${this.baseUrl}/api/items`, {
       headers: this._defaultHeaders
@@ -13,7 +14,7 @@ export default class APIService {
       .catch(e => console.error(e))
   }
 
-  createItem () {
+  createItem() {
     console.debug(`POST ${this.baseUrl}/api/items`, this.uid)
     return fetch(`${this.baseUrl}/api/items`, {
       method: 'POST',
@@ -27,7 +28,7 @@ export default class APIService {
       .catch(e => console.error(e))
   }
 
-  updateItem (item) {
+  updateItem(item) {
     console.debug(`PUT ${this.baseUrl}/api/items`, this.uid)
     return fetch(`${this.baseUrl}/api/items/` + item.id, {
       method: 'PUT',
@@ -38,7 +39,7 @@ export default class APIService {
       .catch(e => console.error(e))
   }
 
-  deleteItem (item) {
+  deleteItem(item) {
     console.debug(`DELETE ${this.baseUrl}/api/items`, this.uid, item)
     return fetch(`${this.baseUrl}/api/items/` + item.id, {
       method: 'DELETE',
@@ -48,7 +49,7 @@ export default class APIService {
       .catch(e => console.error(e))
   }
 
-  get _defaultHeaders () {
+  get _defaultHeaders() {
     return {
       'x-simply-do-uid': this.uid
     }

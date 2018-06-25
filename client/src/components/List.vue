@@ -25,12 +25,12 @@ import Sortable from 'sortablejs'
 import APIService from '../services/APIService'
 
 class WorkQueue {
-  constructor (api) {
+  constructor(api) {
     this.api = api
     this.workMap = {}
   }
 
-  enqueueUpdate (item) {
+  enqueueUpdate(item) {
     clearTimeout(this.workMap[item.id])
     this.workMap[item.id] = setTimeout(() => {
       if (item.text !== '') {
@@ -45,7 +45,7 @@ class WorkQueue {
 
 export default {
   name: 'List',
-  data () {
+  data() {
     return {
       api: null,
       workQueue: null,
@@ -54,24 +54,24 @@ export default {
     }
   },
   computed: {
-    lastItem () {
+    lastItem() {
       return this.items ? this.items[this.items.length - 1] : null
     }
   },
   methods: {
-    updateDebounced (item) {
+    updateDebounced(item) {
       this.workQueue.enqueueUpdate(item)
     },
-    deleteItem (item) {
+    deleteItem(item) {
       this._executeAsyncApiDeleteItem(item)
       this.items.splice(this.items.indexOf(item), 1)
     },
-    deleteItemIfEmpty (item) {
+    deleteItemIfEmpty(item) {
       if (item.text === '') {
         this.deleteItem(item)
       }
     },
-    addNewItem () {
+    addNewItem() {
       let newItem = {
         id: 'id-placeholder',
         checked: false,
@@ -91,7 +91,7 @@ export default {
         })
         .catch(e => console.error('CREATE errored:', e))
     },
-    _executeAsyncApiDeleteItem (item) {
+    _executeAsyncApiDeleteItem(item) {
       setTimeout(() => {
         if (item.id === 'id-placeholder') {
           console.debug('DELETE id-placeholder: delaying 1 second...')
@@ -104,7 +104,7 @@ export default {
       }, 1000)
     }
   },
-  mounted () {
+  mounted() {
     let el = document.getElementById('listWithHandle')
     Sortable.create(el)
     const uid = this.$route.params.id || 'default'
@@ -113,7 +113,7 @@ export default {
     this.workQueue = new WorkQueue(this.api)
     this.api.getItems().then(items => (this.items = items))
   },
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     console.debug('routing from', from, 'to', to)
     this.api = new APIService(to.params.id || 'default')
     this.workQueue = new WorkQueue(this.api)

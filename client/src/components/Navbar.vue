@@ -20,18 +20,18 @@ import uuidv4 from 'uuid/v4'
 
 export default {
   name: 'Navbar',
-  data () {
+  data() {
     return {
       uid: ''
     }
   },
   computed: {
-    uidInputDisplayValue () {
+    uidInputDisplayValue() {
       return this.uid !== 'default' ? this.uid : ''
     }
   },
   methods: {
-    copyToClipboard () {
+    copyToClipboard() {
       const copyText = `https://simply-do.herokuapp.com${this.$route.path}`
       navigator.clipboard
         .writeText(copyText)
@@ -41,15 +41,15 @@ export default {
       let tooltip = document.getElementById('myTooltip')
       tooltip.innerHTML = 'Copied Link to Clipboard!'
     },
-    generateRandomId () {
+    generateRandomId() {
       this.uid = uuidv4()
     },
-    go () {
+    go() {
       let uid = document.getElementById('uid-input').value
       this.uid = uid || 'default'
       this.$router.push({ path: `/list/${this.uid}` })
     },
-    showCopiedToClipboard () {
+    showCopiedToClipboard() {
       document.getElementById('myTooltip').innerHTML = 'Copy to Clipboard'
     }
   }
