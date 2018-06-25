@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>Current List ID: {{ lid }} </div>
+    <div>Current List: {{ lid }} </div>
     <input type="text" id="lid-input" placeholder="default" :value="uidInputDisplayValue" @keyup.enter="go">
     <button @click="go">Go</button>
     <div>
@@ -38,11 +38,11 @@ export default {
         .then(() => console.log(`copied ${copyText} to clipboard!`))
         .catch(err => console.error('error copying to clipboard:', err))
 
-      let tooltip = document.getElementById('myTooltip')
-      tooltip.innerHTML = 'Copied Link to Clipboard!'
+      document.getElementById('myTooltip').innerHTML =
+        'Copied Link to Clipboard!'
     },
     generateRandomId() {
-      this.lid = uuidv4()
+      document.getElementById('lid-input').value = uuidv4()
     },
     go() {
       this.lid = document.getElementById('lid-input').value || 'default'
