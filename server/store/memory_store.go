@@ -21,8 +21,8 @@ func NewMemoryStore() *MemoryStore {
 	}
 }
 
-// SetUserList is a noop, here to satisfy Store inteface.
-func (m *MemoryStore) SetUserList(uid, lid, password string) error {
+// SetListID is a noop, here to satisfy Store inteface.
+func (m *MemoryStore) SetListID(lid, password string) error {
 	return nil
 }
 

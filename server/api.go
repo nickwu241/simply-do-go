@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/nickwu241/simply-do/server/models"
@@ -16,17 +15,15 @@ type API struct {
 	store store.Store
 }
 
-func (api *API) setUserMiddleware(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	if strings.HasPrefix(r.URL.Path, "/api") {
-		uid := r.Header.Get("x-simply-do-uid")
-		lid := r.Header.Get("x-simply-do-lid")
-		userPassword := r.Header.Get("x-simply-do-user-password")
-		if err := api.store.SetUserList(uid, lid, userPassword); err != nil {
+func (api *API) setList(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+		if err := api.store.SetListID(params["lid"], ""); err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-	}
-	next(w, r)
+		handler.ServeHTTP(w, r)
+	})
 }
 
 func (api *API) getItems(w http.ResponseWriter, r *http.Request) {

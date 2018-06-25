@@ -21,13 +21,15 @@ func NewServer() (Server, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "initializing firebase database")
 	}
-	api := API{store: store}
 	router := mux.NewRouter()
-	router.HandleFunc("/api/items", api.getItems).Methods("GET")
-	router.HandleFunc("/api/items/{id}", api.getItem).Methods("GET")
-	router.HandleFunc("/api/items", api.createItem).Methods("POST")
-	router.HandleFunc("/api/items/{id}", api.updateItem).Methods("PUT")
-	router.HandleFunc("/api/items/{id}", api.deleteItem).Methods("DELETE")
+	api := API{store: store}
+	apiRouter := router.PathPrefix("/api").Subrouter()
+	apiRouter.Handle("/list/{lid}/items", api.setList(http.HandlerFunc(api.getItems))).Methods("GET")
+	apiRouter.Handle("/list/{lid}/items/{id}", api.setList(http.HandlerFunc(api.getItem))).Methods("GET")
+	apiRouter.Handle("/list/{lid}/items", api.setList(http.HandlerFunc(api.createItem))).Methods("POST")
+	apiRouter.Handle("/list/{lid}/items/{id}", api.setList(http.HandlerFunc(api.updateItem))).Methods("PUT")
+	apiRouter.Handle("/list/{lid}/items/{id}", api.setList(http.HandlerFunc(api.deleteItem))).Methods("DELETE")
+
 	defaultNotFoundHandler := router.NotFoundHandler
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix("/#/", r.URL.Path) {
@@ -39,11 +41,16 @@ func NewServer() (Server, error) {
 
 	CORSMiddleware := func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(200)
+			return
+		}
 		next(w, r)
 	}
 	server := negroni.Classic().With(
 		negroni.HandlerFunc(CORSMiddleware),
-		negroni.HandlerFunc(api.setUserMiddleware),
 	)
 	server.UseHandler(router)
 	return server, nil

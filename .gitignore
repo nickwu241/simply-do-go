@@ -1,3 +1,20 @@
 .DS_Store
 .env.secret
 simply-do-firebase-adminsdk.json
+public/
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+client/dist/
+client/test/unit/coverage/
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
