@@ -8,12 +8,12 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
+      name: 'home',
       component: List
     },
     {
       path: '/list/:id',
-      name: 'List',
+      name: 'list',
       component: List
     }
   ]

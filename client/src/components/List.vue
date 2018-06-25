@@ -107,9 +107,9 @@ export default {
   mounted() {
     let el = document.getElementById('listWithHandle')
     Sortable.create(el)
-    const uid = this.$route.params.id || 'default'
-    console.log(`mounting List with ${uid}`)
-    this.api = new APIService(uid)
+    const lid = this.$route.params.id || 'default'
+    console.log(`mounting ListView with ${lid}`)
+    this.api = new APIService(lid)
     this.workQueue = new WorkQueue(this.api)
     this.api.getItems().then(items => (this.items = items))
   },

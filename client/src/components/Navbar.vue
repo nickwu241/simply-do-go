@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div>Current List ID: {{ uid }} </div>
-    <input type="text" id="uid-input" placeholder="default" :value="uidInputDisplayValue" @keyup.enter="go">
+    <div>Current List ID: {{ lid }} </div>
+    <input type="text" id="lid-input" placeholder="default" :value="uidInputDisplayValue" @keyup.enter="go">
     <button @click="go">Go</button>
     <div>
       <button @click="generateRandomId">Generate Random ID</button>
@@ -22,12 +22,12 @@ export default {
   name: 'Navbar',
   data() {
     return {
-      uid: ''
+      lid: ''
     }
   },
   computed: {
     uidInputDisplayValue() {
-      return this.uid !== 'default' ? this.uid : ''
+      return this.lid !== 'default' ? this.lid : ''
     }
   },
   methods: {
@@ -42,16 +42,18 @@ export default {
       tooltip.innerHTML = 'Copied Link to Clipboard!'
     },
     generateRandomId() {
-      this.uid = uuidv4()
+      this.lid = uuidv4()
     },
     go() {
-      let uid = document.getElementById('uid-input').value
-      this.uid = uid || 'default'
-      this.$router.push({ path: `/list/${this.uid}` })
+      this.lid = document.getElementById('lid-input').value || 'default'
+      this.$router.push({ name: 'list', params: { id: this.lid } })
     },
     showCopiedToClipboard() {
       document.getElementById('myTooltip').innerHTML = 'Copy to Clipboard'
     }
+  },
+  mounted() {
+    this.lid = this.$route.params.id || ''
   }
 }
 </script>
