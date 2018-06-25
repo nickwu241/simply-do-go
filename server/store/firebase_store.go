@@ -33,30 +33,29 @@ func NewFirebaseStore() (*FirebaseStore, error) {
 		db:       db,
 	}
 
-	if err := store.SetUserList("default", "", ""); err != nil {
+	if err := store.SetListID("default", ""); err != nil {
 		return nil, err
 	}
 	return store, nil
 }
 
-// SetUserList initializes the Store to use the UID and LID for all subsequent operations.
-// If UID is empty, "default" will be used.
-// If the UID doesn't exist, it will be created.
-func (f *FirebaseStore) SetUserList(uid, lid, password string) error {
-	if uid == "" {
-		uid = "default"
+// SetListID initializes the Store to use the lid for all subsequent operations.
+// If lid is empty, "default" will be used.
+// If the lid doesn't exist, it will be created.
+func (f *FirebaseStore) SetListID(lid, password string) error {
+	if lid == "" {
+		lid = "default"
 	}
-	uid = strings.ToLower(uid)
+	lid = strings.ToLower(lid)
 
-	f.userRoot = f.db.NewRef("/" + uid)
-	f.userList = f.userRoot.Child(lid)
+	f.userRoot = f.db.NewRef("/" + lid)
 	var userData interface{}
 	if err := f.userRoot.Get(context.Background(), &userData); err != nil {
-		return errors.Wrap(err, "getting uid")
+		return errors.Wrap(err, "getting lid")
 	}
 	if userData == nil {
-		if err := f.userRoot.Set(context.Background(), uid); err != nil {
-			return errors.Wrap(err, "setting up uid")
+		if err := f.userRoot.Set(context.Background(), lid); err != nil {
+			return errors.Wrap(err, "setting up lid")
 		}
 	}
 
@@ -71,7 +70,7 @@ func (f *FirebaseStore) SetUserList(uid, lid, password string) error {
 	f.globalID = globalID
 
 	if f.userHasPassword() && !f.isCorrectPassword(password) {
-		return errors.Errorf("access unauthorized for list %q", uid)
+		return errors.Errorf("access unauthorized for list %q", lid)
 	}
 	return nil
 }
