@@ -49,6 +49,7 @@ func (f *FirebaseStore) SetListID(lid, password string) error {
 	lid = strings.ToLower(lid)
 
 	f.userRoot = f.db.NewRef("/" + lid)
+	f.userList = f.userRoot
 	var userData interface{}
 	if err := f.userRoot.Get(context.Background(), &userData); err != nil {
 		return errors.Wrap(err, "getting lid")

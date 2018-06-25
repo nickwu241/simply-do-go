@@ -13,7 +13,7 @@ export default class APIService {
   }
 
   createItem() {
-    console.debug(`POST ${this.baseUrl}/api/list/${this.lid}/items`, this.lid)
+    console.debug(`POST ${this.baseUrl}/api/list/${this.lid}/items`)
     return fetch(`${this.baseUrl}/api/list/${this.lid}/items`, {
       method: 'POST',
       body: JSON.stringify({
@@ -26,8 +26,8 @@ export default class APIService {
   }
 
   updateItem(item) {
-    console.debug(`PUT ${this.baseUrl}/list/${this.lid}/api/items`, this.lid)
-    return fetch(`${this.baseUrl}/list/${this.lid}/api/items` + item.id, {
+    console.debug(`PUT ${this.baseUrl}/api/list/${this.lid}/items/${item.id}`)
+    return fetch(`${this.baseUrl}/api/list/${this.lid}/items/${item.id}`, {
       method: 'PUT',
       body: JSON.stringify(item)
     })
@@ -37,11 +37,9 @@ export default class APIService {
 
   deleteItem(item) {
     console.debug(
-      `DELETE ${this.baseUrl}/list/${this.lid}/api/items`,
-      this.lid,
-      item
+      `DELETE ${this.baseUrl}/api/list/${this.lid}/items/${item.id}`
     )
-    return fetch(`${this.baseUrl}/list/${this.lid}/api/items` + item.id, {
+    return fetch(`${this.baseUrl}/api/list/${this.lid}/items/${item.id}`, {
       method: 'DELETE',
       headers: this._defaultHeaders
     })
