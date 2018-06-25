@@ -21,10 +21,13 @@ Make commands:
 
 ```shell
 $ make
+build-client                   Builds the frontend files to public
 build-docker                   Builds the docker image
 build-linux-binary             Builds the linux binary
 clean                          Cleans up the built binaries
 deploy                         Deploys to Heroku. Requires to be logged in on Heroku Registry
 help                           List targets & descriptions
+run-client                     Starts the frotend server. Run this after backend server if developing locally
+run-docker                     Starts the server with the latest built docker image. Requires .env.secret
 run                            Starts the server locally on port 8080 or $PORT if set
 ```

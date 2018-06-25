@@ -25,7 +25,10 @@ deploy: build-docker ## Deploys to Heroku. Requires to be logged in on Heroku Re
 run: ## Starts the server locally on port 8080 or $PORT if set
 	go run main.go server
 
+run-client: ## Starts the frotend server. Run this after backend server if developing locally
+	(cd client && npm start)
+
 run-docker: ## Starts the server with the latest built docker image. Requires .env.secret
 	docker run --rm -it -p 8080:8080 --env-file .env.secret simply-do:latest
 
-.PHONY: help build-client build-linux-binary build-docker clean deploy run
+.PHONY: help build-client build-linux-binary build-docker clean deploy run run-client run-docker
